@@ -1,6 +1,7 @@
 package software.ulpgc.imageviewer;
 
-import software.ulpgc.imageviewer.ImageDisplay.*;
+import software.ulpgc.imageviewer.swing.ImageDisplay;
+import software.ulpgc.imageviewer.swing.ImageDisplay.*;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
