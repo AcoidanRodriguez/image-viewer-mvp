@@ -1,7 +1,7 @@
 package software.ulpgc.imageviewer;
 
 public interface Image {
-    String id();
+    String name();
     Image next();
     Image prev();
 
