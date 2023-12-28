@@ -1,7 +1,5 @@
 package software.ulpgc.imageviewer.swing;
 
-import software.ulpgc.imageviewer.ImageDisplay;
-
 import javax.swing.*;
 import java.awt.*;
 
