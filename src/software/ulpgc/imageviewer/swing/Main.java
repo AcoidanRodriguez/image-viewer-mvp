@@ -8,7 +8,7 @@ import software.ulpgc.imageviewer.mocks.MockImageLoader;
 import java.io.File;
 
 public class Main {
-    private static final String root = "";
+    private static final String root = "C:/Users/acer/Pictures/Capturas";
 
     public static void main(String[] args) {
         MainFrame frame = new MainFrame();
