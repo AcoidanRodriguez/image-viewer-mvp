@@ -1,4 +1,4 @@
-package software.ulpgc.imageviewer;
+package software.ulpgc.imageviewer.swing;
 
 import java.awt.image.BufferedImage;
 
