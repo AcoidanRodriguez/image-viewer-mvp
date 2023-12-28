@@ -1,7 +1,5 @@
 package software.ulpgc.imageviewer;
 
-import software.ulpgc.imageviewer.FileImageLoader;
-import software.ulpgc.imageviewer.ImagePresenter;
 import software.ulpgc.imageviewer.swing.MainFrame;
 
 import java.io.File;
