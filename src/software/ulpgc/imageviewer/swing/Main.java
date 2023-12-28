@@ -1,9 +1,7 @@
 package software.ulpgc.imageviewer.swing;
 
 import software.ulpgc.imageviewer.FileImageLoader;
-import software.ulpgc.imageviewer.Image;
 import software.ulpgc.imageviewer.ImagePresenter;
-import software.ulpgc.imageviewer.mocks.MockImageLoader;
 
 import java.io.File;
 
@@ -17,7 +15,4 @@ public class Main {
         frame.setVisible(true);
     }
 
-    private static Image image() {
-        return new MockImageLoader().load();
-    }
 }
