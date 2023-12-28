@@ -1,7 +1,9 @@
 package software.ulpgc.imageviewer;
 
+import java.awt.image.BufferedImage;
+
 public interface ImageDisplay {
-    void paint(String id, int offset);
+    void paint(String id, int offset, BufferedImage img);
     int getWidth();
     void clear();
     void on(Shift shift);
