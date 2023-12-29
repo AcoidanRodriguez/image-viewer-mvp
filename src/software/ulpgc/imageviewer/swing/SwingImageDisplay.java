@@ -1,15 +1,18 @@
 package software.ulpgc.imageviewer.swing;
 
-import software.ulpgc.imageviewer.ImageDisplay;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+
+import static java.awt.Color.BLACK;
+import static java.awt.image.AffineTransformOp.TYPE_BICUBIC;
 
 public class SwingImageDisplay extends JPanel implements ImageDisplay {
     private Shift shift = Shift.Null;
@@ -57,27 +60,80 @@ public class SwingImageDisplay extends JPanel implements ImageDisplay {
     }
 
     @Override
-    public void paint(String id, int offset) {
-        paints.add(new Paint(id, offset));
+    public void paint(String id, int offset, BufferedImage bitmap) {
+        paints.add(new Paint(id, offset, bitmap));
         repaint();
     }
 
     @Override
-    public void clear() {
-        paints.clear();
-    }
-
-    private static final Map<String,Color> colors = Map.of(
-            "red", Color.RED,
-            "green", Color.GREEN,
-            "blue", Color.BLUE
-    );
+    public void clear() {paints.clear();}
     @Override
     public void paint(Graphics g) {
         for (Paint paint : paints) {
-            g.setColor(colors.get(paint.id));
-            g.fillRect(paint.offset, 0, 800, 600);
+            g.setColor(BLACK);
+            g.drawImage(getScaledImageWithBackground(paint),paint.offset,0,null);
         }
+    }
+
+    private BufferedImage getScaledImageWithBackground(Paint paint) {
+        BufferedImage image = scale(paint.bitmap());
+        return addBackground(image);
+    }
+
+    private BufferedImage addBackground(BufferedImage image) {
+        BufferedImage imageWithBackground = new BufferedImage(getWidth(),getHeight(), image.getType());
+        Graphics2D graphics2D = imageWithBackground.createGraphics();
+        graphics2D.setColor(BLACK);
+        graphics2D.fillRect(0,0,getWidth(),getHeight());
+        graphics2D.drawImage(image,getXCoordinate(image), getYCoordinate(image),null);
+        graphics2D.dispose();
+        return imageWithBackground;
+    }
+
+    private  int getYCoordinate(BufferedImage bitmap) {
+        return this.getHeight() < bitmap.getHeight() ?
+                0 : (this.getHeight()-bitmap.getHeight())/2 ;
+    }
+
+    private int getXCoordinate(BufferedImage bitmap) {
+        return this.getWidth() < bitmap.getWidth() ?
+                0 : ((this.getWidth()-bitmap.getWidth())/2);
+    }
+
+    private BufferedImage scale(BufferedImage bitmap) {
+        if (this.getWidth() < bitmap.getWidth() && this.getHeight() < bitmap.getHeight()){
+            return resizeAll(bitmap,new BufferedImage(this.getWidth(), this.getHeight(), bitmap.getType()));
+        }
+        else if (this.getWidth() >= bitmap.getWidth() && this.getHeight() < bitmap.getHeight()) {
+            return resizeHeight(bitmap,new BufferedImage(bitmap.getWidth(), this.getHeight(), bitmap.getType()));
+        } else if (this.getWidth() < bitmap.getWidth() && this.getHeight() >= bitmap.getHeight()) {
+            return resizeWidth(bitmap,new BufferedImage(this.getWidth(), bitmap.getHeight(), bitmap.getType()));
+        }
+        return bitmap;
+    }
+
+    private BufferedImage resizeWidth(BufferedImage bitmap, BufferedImage newBitmap) {
+        new AffineTransformOp(AffineTransform.getScaleInstance(
+                (float)this.getWidth()/(float) bitmap.getWidth(),
+                1),TYPE_BICUBIC)
+                .filter(bitmap,newBitmap);
+        return newBitmap;
+    }
+
+    private BufferedImage resizeHeight(BufferedImage bitmap, BufferedImage newBitmap) {
+        new AffineTransformOp(AffineTransform.getScaleInstance(
+                1,
+                (float)this.getHeight()/(float) bitmap.getHeight()),TYPE_BICUBIC)
+                .filter(bitmap,newBitmap);
+        return newBitmap;
+    }
+
+    private BufferedImage resizeAll(BufferedImage bitmap, BufferedImage newBitmap ) {
+        new AffineTransformOp(AffineTransform.getScaleInstance(
+                (float)this.getWidth()/(float)bitmap.getWidth(),
+                (float)this.getHeight()/(float)bitmap.getHeight()), TYPE_BICUBIC)
+                .filter(bitmap,newBitmap);
+        return newBitmap;
     }
 
     @Override
@@ -90,5 +146,5 @@ public class SwingImageDisplay extends JPanel implements ImageDisplay {
         this.released = released != null ? released : Released.Null;
     }
 
-    private record Paint(String id, int offset) {}
+    private record Paint (String id ,int offset, BufferedImage bitmap){}
 }
